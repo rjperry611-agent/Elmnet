@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+langchain
+libp2p
+weaviate-client
+requests
+httpx
