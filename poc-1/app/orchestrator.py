@@ -30,16 +30,15 @@ class Orchestrator(BaseAgent):
             Below are descriptions of different agents and their capabilities:
             {agent_descriptions}
 
-            Given the user query: "{query}", determine which agent is best suited to handle it. Respond with the agent's name.
+            Given the user query: "{query}", determine which agent is best suited to handle it. Respond with only the agent's name.
             """
 
             # Use Llama to determine the best agent
-            response = await self.handle_request(prompt)
-            best_agent_name = response.text.strip()
+            best_agent_name = self.handle_request(prompt)
 
             # Route the query to the appropriate agent
             if best_agent_name in self.internal_agents:
-                return await self.internal_agents[best_agent_name].handle_request(query)
+                return self.internal_agents[best_agent_name].handle_request(query)
             else:
                 return {"error": "Unable to determine the best agent for the query."}
         else:
@@ -50,8 +49,7 @@ class Orchestrator(BaseAgent):
             Query: {query}
             """
 
-            response = await agent_retriever.handle_request(prompt)
-            answer = response.text.strip()
+            answer = agent_retriever.handle_request(prompt)
             if "yes" in answer:
                 return agent_retriever.handle_request(query)
             if "no" in answer:
