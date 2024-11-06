@@ -18,10 +18,15 @@ class PeerInfo(BaseModel):
     node_url: str
 
 @app.post("/query-peers")
-async def query_peers(peer_info: PeerInfo):
+async def query_peers_and_add(peer_info: PeerInfo):
     # Add the caller's node URL to peer_list
     peer_list.add(peer_info.node_url)
     print(f"Added new peer: {peer_info.node_url}")
+    # Return about 5 random peers from peer_list
+    return await query_peers()
+
+@app.get("/query-peers")
+async def query_peers():
     # Return about 5 random peers from peer_list
     peers = list(peer_list)
     random_peers = random.sample(peers, min(len(peers), 5))

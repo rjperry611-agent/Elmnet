@@ -1,13 +1,21 @@
 from langchain_ollama import ChatOllama
+import requests
 
 class BaseAgent:
+
+    print("Pulling llama3.2")
+    response = requests.post("http://ollama:11434/api/pull", json={
+        "name": "llama3.2"
+    })
+    print("Finished pulling llama3.2")
+
     def __init__(self, name):
         self.name = name
         self.system_prompt = ""
         self.llm = ChatOllama(
             model="llama3.2",
             temperature=0,
-            # other params...
+            base_url="http://ollama:11434"
         )
 
     def start(self):

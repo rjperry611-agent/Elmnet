@@ -1,9 +1,8 @@
 fastecdsa
 fastapi[standard]
 uvicorn
-p2pclient
-langchain
-weaviate-client
 requests
 httpx
+
+langchain
 langchain-ollama

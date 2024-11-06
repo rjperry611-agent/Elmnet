@@ -1,0 +1,71 @@
+version: '3'
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    ports:
+      - "11435:11434"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    volumes:
+      - ./data:/app/data  # Adjust based on Ollama's requirements
+    networks:
+      - net1
+    
+  node1:
+    build: .
+    depends_on:
+      - ollama
+    environment:
+      - WHOAMI=http://node1:8000
+    ports:
+      - "8000:8000"
+    networks:
+      - net1
+  node2:
+    build: .
+    depends_on:
+      - ollama
+    environment:
+      - WHOAMI=http://node2:8000
+      - BOOTSTRAP_URL=http://node1:8000
+    ports:
+      - "8001:8000"
+    networks:
+      - net1
+  node3:
+    build: .
+    depends_on:
+      - ollama
+    environment:
+      - WHOAMI=http://node3:8000
+      - BOOTSTRAP_URL=http://node1:8000
+    ports:
+      - "8002:8000"
+    networks:
+      - net1
+  node4:
+    build: .
+    depends_on:
+      - ollama
+    environment:
+      - WHOAMI=http://node4:8000
+      - BOOTSTRAP_URL=http://node2:8000 # this one uses node2 as the bootstrap node
+    ports:
+      - "8003:8000"
+    networks:
+      - net1
+    
+networks:
+  net1:
+    driver: bridge
