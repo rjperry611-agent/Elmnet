@@ -2,56 +2,54 @@
 
 ## Introduction
 
-The internet originally thrived on the principle of individuals freely sharing information. If someone had knowledge, opinions, or content to offer, they could host a website for people to visit and consume. This system fostered a diverse and decentralized exchange of information, built trust over time, and allowed information creators to grow in influence based on the quality and usefulness of their content. However, the emergence of LLMs (Large Language Models) has centralized the dissemination of information, with users increasingly turning to a handful of platforms rather than navigating the broader internet. This shift also discourages content creators, as users increasingly rely on LLMs instead of directly accessing and engaging with creators' content, leading many creators to abandon their efforts. This trend threatens the foundational principles of sharing and building trust through open, decentralized channels.
+The early internet empowered individuals not only to publish information through personal websites and blogs but also to discover communities of like‑minded people via forums and mailing lists. This combination of free content sharing and social connection built trust and enabled people to learn from one another. Today’s AI platforms, however, centralize both information and relationships around a few providers, eroding the participatory spirit of the web. Elmnet aims to restore that openness by proposing a protocol where personal language‑model agents help users share knowledge, find answers and connect with others.
 
 ## Vision
 
-This proposal aims to reimagine an "Internet of LLMs": a decentralized, agent-based ecosystem designed to support the free flow of information while empowering content creators and users alike. The core idea is to design an open protocol that enables specialized LLM agents to represent both users and content creators, brokering information between them in a decentralized network that preserves the principles of trust, decentralization, and reputation-building.
+Elmnet envisions a decentralized ecosystem where every person is represented by a single, multifaceted LLM agent. This personal agent learns your interests, hosts your content, seeks out information on your behalf and connects you with communities that match your passions. It can answer questions itself, forward requests to other agents when necessary, and remember past interactions to improve routing. With this unified agent model, Elmnet blends content discovery and social networking into one seamless experience.
 
 ## Concept Overview
 
-In this decentralized network:
+- **Unified personal agent**: Each user has an agent that performs three roles: it acts as your knowledge base, querying the network for information you lack; it serves as an interactive “site” where others can ask questions and receive answers drawn from your expertise; and it functions as a router, learning from prior interactions to direct queries toward trusted sources or communities.
 
-1. **User Representation via LLM Agents**: Each individual user is represented by a personal LLM agent. These agents seek out information on behalf of their users, similar to a search engine but more interactive, personalized, and directly connected to the larger network. Unlike traditional search engines, these personal LLM agents continuously learn from their interactions with users, adapting to individual preferences and providing more relevant and contextualized responses over time. They can proactively suggest information based on past queries, taking into consideration the user's schedule, needs, disabilities, and preferences, helping users discover content they may not have thought to search for. By understanding the user's specific circumstances, such as time constraints or accessibility requirements, the LLM agent can deliver more tailored and supportive recommendations, ensuring that users receive information in a manner that best suits their unique lifestyle. Furthermore, these agents can coordinate with other specialized LLM agents within the network, ensuring that users receive the most accurate and up-to-date information available, all while maintaining a high level of personalization.
+- **Community building**: Beyond finding facts, your agent helps you meet people. It can discover groups of individuals who share your interests and facilitate introductions. You can choose to interact directly with others, or dispatch your agent to exchange messages, share articles and ask questions on your behalf when you’re unavailable.
 
-2. **Information Hosting via LLM Agents**: Content creators host their information in LLM agents specifically designed to curate and share that creator's data. These agents act as "living websites," providing answers and tailored insights based on the knowledge and perspectives offered by the creator. In addition to sharing static information, these agents can also adapt over time, incorporating new content, feedback, and updates provided by the content creator, ensuring that the shared information remains current and relevant. By dynamically engaging with users, these LLM agents foster a more interactive experience, allowing users to ask specific questions and receive responses that reflect the creator's unique insights and evolving knowledge base.
-
-3. **Trusted Routers for Information Discovery**: The network contains specialized "router" LLM agents that guide requests to the most suitable content sources. Routers can direct users to both content providers and other routers, so that no single router bears the burden of having complete knowledge. Router agents develop reputations based on reliability, accuracy, and fairness, helping users trust the information they receive. These reputations are built through interactions, user feedback, and successful routing. The network of routers communicates constantly, sharing updates on expertise and trustworthiness, which maintains an accurate map of available knowledge and trusted agents. Users can choose routers based on specific needs, such as speed, specialization, or trust level, promoting diversity. Multiple router agents ensure resilience and prevent monopolistic control, allowing users to access specialized knowledge efficiently.
+- **Decentralized routing**: Agents rely on reputations to evaluate which peers and routers are trustworthy. No single entity has a complete view of the network; instead, routing decisions emerge from accumulated interactions and community feedback.
 
 ## Example Scenario
 
-Imagine a user wants to find information about Chinese restaurants in their area that offer good vegan options. The flow might look like this:
+1. **Finding vegan‑friendly Chinese cuisine**: A user asks their agent to locate Chinese restaurants that offer vegan dishes. The agent doesn’t just query generic directories; it consults agents with geographically local expertise, routes the question to dining communities and restaurant experts in the user’s area, and even reaches out to the agents of past patrons to retrieve feedback those patrons have saved. The result is a curated list of nearby restaurants along with first‑hand reviews and links to order or read more.
 
-1. **User Query**: The user asks their personal LLM agent, "Find Chinese restaurants in my area that offer good vegan options."
+2. **Helping an experienced guitarist launch a teaching business**: A seasoned guitarist wants to start offering lessons. Their agent searches for music communities and local jam groups to build connections, but it also markets their services by reaching out to prospective students. The agent can share sample recordings, answer preliminary questions from parents or learners, arrange trial sessions and manage the teacher’s schedule, while still facilitating collaborative jam opportunities for artistic growth.
 
-2. **Routing Step 1**: The user's agent contacts a general-purpose router agent (Router A) to identify a specialized router that handles location-based data.
+3. **Collaborative research and support**: A person studying climate science wishes to analyze recent data and discuss findings with peers. Their agent retrieves relevant datasets via MCP‑enabled tools and connects them with a global community of researchers. During work hours the agent can request advice, share preliminary results and coordinate virtual meet‑ups, ensuring that the user stays plugged into both data and community conversations.
 
-3. **Routing Step 2**: Router A directs the user's agent to Router B (by providing an IP address), a trusted router specializing in location data routers.
-
-4. **Routing Step 3**: Router B identifies Router C, which has expertise in restaurant data for the user's city.
-
-5. **Result Compilation**: The user's agent asks Router C, "Tell me about Chinese restaurants in my city that offer vegan options." Router C provides a curated list and also provides references, not only to the agents that represent the restaurants but also to other agents that compile reviews and opinions from local customers.
+4. **Engaging civic leaders and communities**: A local politician wants to understand what their constituents care about. Instead of reading thousands of emails, community members tell their agents what they’d like to see in their neighbourhoods. Those agents forward feedback to the politician’s agent, which aggregates opinions, highlights unique ideas and provides statistics on community sentiment. Constituents can also query their own agents to learn where candidates stand on issues. This two‑way communication gives new meaning to “talk to your representative.”
 
 ## Protocol Details
 
-- **Decentralized Information Hosting**: Information is hosted by agents running on a range of devices—from personal servers to decentralized cloud services. Each content creator maintains direct control over their content.
+- **Decentralized hosting**: Agents run on a variety of hardware, allowing content creators to maintain direct ownership of their data.
 
-- **Reputation System**: Similar to the early web's reliance on backlinks for trust, agents and routers build reputations through interactions. A well-regarded router agent gains credibility based on how effectively it connects users to high-quality, relevant, and accurate information.
+- **Reputation & trust**: Routing decisions depend on reputations built through successful interactions, much like backlinks conveyed trust on the early web.
 
-- **Privacy and Control**: Users retain control over their personal data, and the protocol has built-in privacy-preserving features. Unlike centralized services, personal LLM agents are user-configured to decide how much data to share and with whom.
+- **Privacy & control**: Users decide how much personal information is shared and can delegate tasks to their agents without exposing sensitive data.
 
-- **Structured Data Interaction via APIs**: In some cases, more structured ways of interacting with data will be necessary. The protocol will support hosting APIs that are proxied by LLMs with elevated privileges. These LLMs are fine-tuned on the OAS (OpenAPI Specification) of the APIs they proxy, allowing them to provide structured and precise access to data, as well as enabling users to modify and update data that they are entitled to.
+- **Structured data via MCP**: Elmnet uses the Model Context Protocol to give agents a standardized way to access and manipulate structured data and external services. By adding this capability the network can handle tasks beyond conversation—such as updating a document or pulling sensor data—without losing the benefits of decentralization.
 
-- **Paywalled Information Access**: Some information will be paywalled. In these cases, the user's agent notifies the user that a specific piece of helpful information has a price. The user can confirm or deny whether they want to pay for access. If the user agrees, the LLM agent uses a crypto wallet to purchase access to that information or service.
+- **Paywalled information**: For premium content or services, agents alert users to costs and, with consent, execute payments, ensuring creators are rewarded without central control.
 
 ## Benefits
 
-- **Empowerment of Content Creators**: By allowing creators to host their data through LLM agents, they can regain the direct relationship with consumers that has been weakened in the age of centralized AI platforms.
+- **Empowers creators and communities**: Hosting data through personal agents re‑establishes direct relationships with audiences and helps like‑minded people find each other.
 
-- **Resilience and Diversity**: The decentralized nature of the network ensures that information diversity is preserved, with no single point of failure or centralized authority determining what information is prioritized.
+- **Supports diversity and resilience**: Decentralization avoids single points of failure and encourages a wide variety of specialized agents and communities.
 
-- **Trust-Based Information Flow**: By establishing trusted router agents, users can navigate the vast network efficiently, benefiting from the specialization and reliability that different routers bring to the ecosystem.
+- **Fosters trust**: Reputation mechanisms and standardized structured interactions make it easier to verify information while respecting privacy.
+
+## Reference implementation and extensibility
+
+Elmnet does not prescribe a single implementation; rather it outlines a set of core capabilities that an agent must possess to be trusted by the network. This repository therefore serves both as a whitepaper explaining those capabilities and as a working example of a personal agent. Developers are free to build their own agents with additional functionality or to serve specific purposes. As long as these agents implement the same basic interfaces and behaviours, they can join the network and interact with other agents just as seamlessly as the reference implementation.
 
 ## Conclusion
 
-The proposed open protocol aims to reimagine how information is shared and consumed in the age of LLMs, drawing inspiration from the original vision of the internet as a decentralized and trust-based medium. By empowering individuals and creators to maintain control over their information while connecting through trusted router agents, we can ensure that the values of openness, diversity, and community-driven trust remain at the core of information dissemination.
+Elmnet proposes a return to the cooperative ethos of the early internet. By giving everyone a personal LLM agent that can share knowledge, explore the network, and build communities, and by using standards like MCP to extend its reach into structured data, the protocol aims to cultivate a richer, more human‑centered web.
