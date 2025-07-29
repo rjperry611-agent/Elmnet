@@ -22,14 +22,47 @@ services:
     networks:
       - net1
     
+  # Sample node containers demonstrating the P2P network.  Each node
+  # exposes its HTTP API on a unique host port and listens for P2P
+  # connections on a unique ``P2P_PORT``.  Bootstrapping is
+  # configured so that node2 connects to node1 and node3 connects to
+  # node1 and node2.  Additional nodes can be added following the
+  # same pattern.
   node1:
     build: .
     depends_on:
       - ollama
     environment:
-      - WHOAMI=node1
+      - BOOTSTRAP_PEERS=
     ports:
-      - "8000:8000"
+      - "8001:8000"
+      - "9001:9000"
+    networks:
+      - net1
+
+  node2:
+    build: .
+    depends_on:
+      - ollama
+      - node1
+    environment:
+      - BOOTSTRAP_PEERS=node1:9000
+    ports:
+      - "8002:8000"
+      - "9002:9000"
+    networks:
+      - net1
+
+  node3:
+    build: .
+    depends_on:
+      - ollama
+      - node2
+    environment:
+      - BOOTSTRAP_PEERS=node1:9000,node2:9000
+    ports:
+      - "8003:8000"
+      - "9003:9000"
     networks:
       - net1
     

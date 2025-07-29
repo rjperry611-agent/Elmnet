@@ -1,89 +1,91 @@
+"""
+Entry point for the Elmnet proof of concept node.  This module
+instantiates the orchestrator and a P2P network and exposes a
+FastAPI application for handling HTTP based queries.  The previous
+HTTP peer discovery mechanism has been replaced by the P2P network
+implemented in :mod:`network`.  Nodes now discover one another via
+bootstrap peers and exchange queries over persistent socket
+connections.
+"""
+
 from fastapi import FastAPI
-from pydantic import BaseModel
-import random
-import uvicorn
-import requests
-import sys
 import os
-import time
+import uvicorn
 from orchestrator import orchestrator
-from agent_client import agent_client
+from network import P2PNetwork
+
 
 app = FastAPI()
 
-# In-memory set of known peers
-peer_list = set()
+# Global reference to the running P2P network instance.  It is
+# initialized in ``main()`` once environment variables are read.
+p2p_network: P2PNetwork | None = None
 
-class PeerInfo(BaseModel):
-    node_url: str
 
-@app.post("/query-peers")
-async def query_peers_and_add(peer_info: PeerInfo):
-    # Add the caller's node URL to peer_list
-    peer_list.add(peer_info.node_url)
-    print(f"Added new peer: {peer_info.node_url}")
-    # Return about 5 random peers from peer_list
-    return await query_peers()
-
-@app.get("/query-peers")
-async def query_peers():
-    # Return about 5 random peers from peer_list
-    peers = list(peer_list)
-    random_peers = random.sample(peers, min(len(peers), 5))
-    print(f"Providing peers: {random_peers}")
-    return {"peers": random_peers}
-
-def connect_to_bootstrap_node(bootstrap_url, node_url):
-    # Send a request to the bootstrap node's /query-peers endpoint
-    try:
-        response = requests.post(
-            f"{bootstrap_url}/query-peers",
-            json={"node_url": node_url}
-        )
-        if response.status_code == 200:
-            data = response.json()
-            new_peers = data.get("peers", [])
-            peer_list.update(new_peers)
-            print(f"Received peers from bootstrap node: {new_peers}")
-        else:
-            print(f"Failed to query peers from bootstrap node: {bootstrap_url}")
-    except Exception as e:
-        print(f"Error connecting to bootstrap node: {e}")
-
-# Define main endpoints
 @app.get("/internal")
 async def query_internal(query: str):
-    # Route request using router agent
-    response = await orchestrator.orchestrate_request(True, query)
-    return response
+    """Handle a query originating from this node's owner.
 
-# @app.get("/external")
-async def query_external(query: str):
-    # Route request using router agent
-    response = await orchestrator.orchestrate_request(False, query)
-    return response
+    The query is first processed locally through the orchestrator and
+    then broadcast to any connected peers.  Both the local and remote
+    responses are returned in a dictionary.  If no peers are
+    connected only the local response will be included under the
+    ``local`` key.
+    """
+    # Local handling via orchestrator.  The orchestrator call may
+    # return a coroutine when integrated with asynchronous LLMs, so
+    # await it accordingly.
+    local_resp = await orchestrator.orchestrate_request(True, query)
 
-def main():
+    # Broadcast to peers if the network is running.
+    peer_responses: list | None = None
+    if p2p_network is not None:
+        # Running this in a separate coroutine on the network's loop
+        # ensures it doesn't block the HTTP handler.
+        peer_responses = await p2p_network.query_peers(query)  # type: ignore[arg-type]
+    return {
+        "local": local_resp,
+        "peers": peer_responses,
+    }
+
+
+def main() -> None:
+    """Set up the orchestrator, P2P network and launch the API server."""
     orchestrator.start()
-    agent_client.start()
+    # Read P2P configuration from environment variables.  A default
+    # port of 9000 is used if ``P2P_PORT`` is not set.  The
+    # ``BOOTSTRAP_PEERS`` variable should contain a comma separated
+    # list of ``host:port`` entries.
+    p2p_port_str = os.environ.get('P2P_PORT', '9000')
+    try:
+        p2p_port = int(p2p_port_str)
+    except ValueError:
+        p2p_port = 9000
+    bootstrap_csv = os.environ.get('BOOTSTRAP_PEERS', '')
+    bootstrap_peers: list[str] = []
+    if bootstrap_csv:
+        bootstrap_peers = [p.strip() for p in bootstrap_csv.split(',') if p.strip()]
 
-    # Get the bootstrap URL from command line arguments, if any
-    whoami = os.environ.get('WHOAMI')
-    bootstrap_url = os.environ.get('BOOTSTRAP_URL')
-    if whoami and bootstrap_url:
-        print(f"{whoami} connecting to bootstrap node at {bootstrap_url}")
-        # Wait a bit to ensure the bootstrap node is up
-        time.sleep(2)
-        # Connect to bootstrap node
-        connect_to_bootstrap_node(bootstrap_url, whoami)
-        # Add bootstrap node to peer list
-        peer_list.add(bootstrap_url)
-    elif whoami:
-        print(f"No bootstrap URL provided. {whoami} will be the first node in the network.")
-    else:
-        print(f"Running in single node mode")
-    # Start the FastAPI server
+    # Define a simple wrapper around the orchestrator call.  When
+    # broadcasting queries to peers we want to synchronously call
+    # orchestrator from the network's loop; if the orchestrator ever
+    # returns a coroutine this wrapper will await it.  Passing the
+    # wrapper avoids tight coupling between the network and the
+    # orchestrator implementation.
+    def on_query(query: str):
+        resp = orchestrator.orchestrate_request(True, query)
+        return resp
+
+    # Instantiate and start the P2P network.  Store it in the module
+    # level variable so the HTTP handlers can reference it.
+    global p2p_network
+    p2p_network = P2PNetwork(p2p_port, bootstrap_peers, on_query)  # type: ignore
+    p2p_network.start()
+
+    # Log startup information.
+    print(f"HTTP API listening on port 8000, P2P port {p2p_port}")
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
 
 if __name__ == "__main__":
     main()
